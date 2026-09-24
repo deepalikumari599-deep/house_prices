@@ -1,20 +1,15 @@
 import streamlit as st
 import pandas as pd
+import joblib
 
 
-# ---------------------------------------------------------
-# PAGE CONFIG
-# ---------------------------------------------------------
+
 
 st.set_page_config(
     page_title="DreamHome | House Price Predictor",
     page_icon="🏡",
-    layout="wide"
+    layout="wide
 )
-
-# ---------------------------------------------------------
-# LOAD MODEL
-# ---------------------------------------------------------
 
 @st.cache_resource
 def load_model():
@@ -23,12 +18,10 @@ def load_model():
 
 model = load_model()
 
-# Exact features used while training the model
+ Exact features used while training the model
 FEATURES = list(model.feature_names_in_)
 
-# ---------------------------------------------------------
-# CUSTOM CSS
-# ---------------------------------------------------------
+
 
 st.markdown("""
 <style>
