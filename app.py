@@ -3,7 +3,9 @@ import pandas as pd
 import joblib
 
 
-
+# =========================================================
+# PAGE SETTINGS
+# =========================================================
 
 st.set_page_config(
     page_title="DreamHome | House Price Predictor",
@@ -11,685 +13,531 @@ st.set_page_config(
     layout="wide"
 )
 
-@st.cache_resource
-def load_model():
-    return joblib.load("house_prices.pk1")
 
-
-model = load_model()
-
- Exact features used while training the model
-FEATURES = list(model.feature_names_in_)
-
-
+# =========================================================
+# CUSTOM CSS
+# =========================================================
 
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-* {
-    font-family: 'Poppins', sans-serif;
-}
-
 .stApp {
-    background: linear-gradient(
-        135deg,
-        #dff7e8 0%,
-        #f4fff8 45%,
-        #e8f7ff 100%
-    );
+    background: linear-gradient(135deg, #e8f8f5, #e8f4ff, #f5fbff);
 }
 
-/* Main container */
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 3rem;
-    max-width: 1200px;
+.main-title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #176b5b;
+    margin-bottom: 5px;
 }
 
-/* Header */
-.hero {
-    background: linear-gradient(
-        135deg,
-        #075e45,
-        #0b8060,
-        #16a085
-    );
-    padding: 35px;
-    border-radius: 25px;
-    color: white;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+.subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
     margin-bottom: 25px;
 }
 
-.hero h1 {
-    font-size: 42px;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.hero p {
-    font-size: 17px;
-    opacity: 0.92;
-}
-
-/* House illustration */
-.house-card {
-    background: linear-gradient(
-        180deg,
-        #9ee7ff 0%,
-        #dff8ff 62%,
-        #78c978 63%,
-        #4da95a 100%
-    );
-    height: 340px;
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-}
-
-/* Sun */
-.sun {
-    position: absolute;
-    right: 55px;
-    top: 35px;
-    width: 70px;
-    height: 70px;
-    background: #ffd95a;
-    border-radius: 50%;
-    box-shadow: 0 0 35px rgba(255,217,90,0.7);
-}
-
-/* House */
-.house {
-    position: absolute;
-    width: 230px;
-    height: 145px;
-    background: #fffaf0;
-    left: 50%;
-    bottom: 55px;
-    transform: translateX(-50%);
-    border-radius: 8px;
-    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-}
-
-/* Roof */
-.roof {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 145px solid transparent;
-    border-right: 145px solid transparent;
-    border-bottom: 105px solid #8c4a35;
-    left: 50%;
-    bottom: 165px;
-    transform: translateX(-50%);
-}
-
-/* Door */
-.door {
-    position: absolute;
-    width: 48px;
-    height: 78px;
-    background: #7b4b32;
-    bottom: 0;
-    left: 91px;
-    border-radius: 5px 5px 0 0;
-}
-
-/* Door knob */
-.knob {
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    background: #ffd45c;
-    border-radius: 50%;
-    right: 7px;
-    top: 40px;
-}
-
-/* Windows */
-.window {
-    position: absolute;
-    width: 48px;
-    height: 45px;
-    background: #8edff5;
-    border: 5px solid #694536;
-    top: 38px;
-}
-
-.window.left {
-    left: 22px;
-}
-
-.window.right {
-    right: 22px;
-}
-
-/* Fairy lights */
-.lights {
-    position: absolute;
-    width: 190px;
-    height: 2px;
-    background: #4c342d;
-    left: 50%;
-    bottom: 165px;
-    transform: translateX(-50%) rotate(2deg);
-}
-
-.light {
-    position: absolute;
-    width: 9px;
-    height: 9px;
-    background: #fff4a3;
-    border-radius: 50%;
-    box-shadow: 0 0 12px #fff4a3;
-}
-
-/* Trees */
-.tree {
-    position: absolute;
-    bottom: 45px;
-    width: 70px;
-    height: 130px;
-}
-
-.tree.left {
-    left: 35px;
-}
-
-.tree.right {
-    right: 35px;
-}
-
-.tree-top {
-    position: absolute;
-    width: 70px;
-    height: 90px;
-    background: #237a42;
-    border-radius: 50%;
-    top: 0;
-}
-
-.tree-trunk {
-    position: absolute;
-    width: 18px;
-    height: 65px;
-    background: #70452e;
-    bottom: 0;
-    left: 26px;
-}
-
-/* Cards */
-.info-card {
-    background: rgba(255,255,255,0.86);
-    padding: 22px;
+.card {
+    background: rgba(255,255,255,0.90);
+    padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.08);
     margin-bottom: 20px;
 }
 
-.section-title {
-    color: #075e45;
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-/* Button */
-.stButton > button,
-.stFormSubmitButton > button {
-    width: 100%;
-    border-radius: 14px;
-    border: none;
-    background: linear-gradient(
-        90deg,
-        #087f5b,
-        #15a77d
-    );
-    color: white;
-    font-size: 17px;
-    font-weight: 600;
-    padding: 13px;
-    box-shadow: 0 8px 18px rgba(8,127,91,0.25);
-}
-
-.stButton > button:hover,
-.stFormSubmitButton > button:hover {
-    background: linear-gradient(
-        90deg,
-        #056c4d,
-        #0c8c69
-    );
-}
-
-/* Prediction result */
 .result-box {
-    background: linear-gradient(
-        135deg,
-        #075e45,
-        #14a77d
-    );
+    background: linear-gradient(135deg, #176b5b, #2fa383);
     color: white;
-    padding: 30px;
-    border-radius: 22px;
+    padding: 25px;
+    border-radius: 20px;
     text-align: center;
     margin-top: 20px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
 }
 
-.result-box h2 {
-    font-size: 18px;
-    margin-bottom: 5px;
-}
-
-.result-box h1 {
+.result-price {
     font-size: 38px;
-    margin: 0;
+    font-weight: 800;
 }
 
-.footer {
-    text-align: center;
-    color: #557066;
-    margin-top: 35px;
-    font-size: 13px;
+.stButton > button {
+    width: 100%;
+    border-radius: 12px;
+    height: 50px;
+    font-size: 17px;
+    font-weight: 700;
+    background: #176b5b;
+    color: white;
+    border: none;
+}
+
+.stButton > button:hover {
+    background: #0f5145;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------
-# HERO
-# ---------------------------------------------------------
+# =========================================================
+# LOAD MODEL
+# =========================================================
 
-st.markdown("""
-<div class="hero">
+@st.cache_resource
+def load_model():
 
-<h1>🏡 DreamHome</h1>
+    # IMPORTANT:
+    # If your actual PKL filename is house_prices(2).pk1,
+    # replace the filename below with that exact name.
 
-<p>
-Smart House Price Prediction using Machine Learning
-</p>
-
-</div>
-""", unsafe_allow_html=True)
+    return joblib.load("house_prices.pk1")
 
 
-# ---------------------------------------------------------
+model = load_model()
+
+
+# =========================================================
+# MODEL FEATURES
+# =========================================================
+
+FEATURES = list(model.feature_names_in_)
+
+
+# =========================================================
+# HEADER
+# =========================================================
+
+st.markdown(
+    '<div class="main-title">🏡 DreamHome</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="subtitle">House Price Prediction System</div>',
+    unsafe_allow_html=True
+)
+
+
+# =========================================================
 # HOUSE ILLUSTRATION
-# ---------------------------------------------------------
+# =========================================================
 
 st.markdown("""
-<div class="house-card">
+<div style="
+    background:linear-gradient(#bde9ff,#eaf9ff);
+    height:300px;
+    border-radius:25px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:30px;
+">
 
-<div class="sun"></div>
+    <!-- Sun -->
+    <div style="
+        position:absolute;
+        right:80px;
+        top:35px;
+        width:65px;
+        height:65px;
+        background:#ffd45a;
+        border-radius:50%;
+    "></div>
 
-<div class="tree left">
-    <div class="tree-top"></div>
-    <div class="tree-trunk"></div>
-</div>
+    <!-- Ground -->
+    <div style="
+        position:absolute;
+        bottom:0;
+        left:0;
+        width:100%;
+        height:80px;
+        background:#91cf7a;
+    "></div>
 
-<div class="tree right">
-    <div class="tree-top"></div>
-    <div class="tree-trunk"></div>
-</div>
+    <!-- House -->
+    <div style="
+        position:absolute;
+        bottom:55px;
+        left:50%;
+        transform:translateX(-50%);
+        width:330px;
+        height:145px;
+        background:#fff5df;
+        border:4px solid #8b6248;
+        border-radius:4px;
+    "></div>
 
-<div class="roof"></div>
+    <!-- Roof -->
+    <div style="
+        position:absolute;
+        bottom:200px;
+        left:50%;
+        transform:translateX(-50%);
+        width:0;
+        height:0;
+        border-left:190px solid transparent;
+        border-right:190px solid transparent;
+        border-bottom:125px solid #b86f50;
+    "></div>
 
-<div class="house">
-
-    <div class="window left"></div>
-    <div class="window right"></div>
-
-    <div class="door">
-        <div class="knob"></div>
+    <!-- Left Window -->
+    <div style="
+        position:absolute;
+        bottom:125px;
+        left:calc(50% - 130px);
+        width:65px;
+        height:55px;
+        background:#aee5f5;
+        border:5px solid #6c503e;
+        box-sizing:border-box;
+    ">
+        <div style="
+            position:absolute;
+            left:50%;
+            top:0;
+            width:4px;
+            height:100%;
+            background:#6c503e;
+            transform:translateX(-50%);
+        "></div>
+        <div style="
+            position:absolute;
+            top:50%;
+            left:0;
+            width:100%;
+            height:4px;
+            background:#6c503e;
+            transform:translateY(-50%);
+        "></div>
     </div>
 
-</div>
+    <!-- Right Window -->
+    <div style="
+        position:absolute;
+        bottom:125px;
+        left:calc(50% + 65px);
+        width:65px;
+        height:55px;
+        background:#aee5f5;
+        border:5px solid #6c503e;
+        box-sizing:border-box;
+    ">
+        <div style="
+            position:absolute;
+            left:50%;
+            top:0;
+            width:4px;
+            height:100%;
+            background:#6c503e;
+            transform:translateX(-50%);
+        "></div>
+        <div style="
+            position:absolute;
+            top:50%;
+            left:0;
+            width:100%;
+            height:4px;
+            background:#6c503e;
+            transform:translateY(-50%);
+        "></div>
+    </div>
 
-<div class="lights">
+    <!-- Door -->
+    <div style="
+        position:absolute;
+        bottom:55px;
+        left:50%;
+        transform:translateX(-50%);
+        width:65px;
+        height:105px;
+        background:#8b6248;
+        border:4px solid #654735;
+        border-bottom:none;
+    ">
+        <div style="
+            position:absolute;
+            right:8px;
+            top:53px;
+            width:8px;
+            height:8px;
+            background:#f5d77b;
+            border-radius:50%;
+        "></div>
+    </div>
 
-<div class="light" style="left:10px;"></div>
-<div class="light" style="left:40px;"></div>
-<div class="light" style="left:70px;"></div>
-<div class="light" style="left:100px;"></div>
-<div class="light" style="left:130px;"></div>
-<div class="light" style="left:160px;"></div>
+    <!-- Tree Left -->
+    <div style="
+        position:absolute;
+        bottom:55px;
+        left:40px;
+        font-size:75px;
+    ">🌳</div>
 
-</div>
+    <!-- Tree Right -->
+    <div style="
+        position:absolute;
+        bottom:55px;
+        right:40px;
+        font-size:75px;
+    ">🌳</div>
 
 </div>
 """, unsafe_allow_html=True)
 
 
-st.markdown("<br>", unsafe_allow_html=True)
+# =========================================================
+# INPUT SECTION
+# =========================================================
+
+st.markdown(
+    '<div class="card">',
+    unsafe_allow_html=True
+)
+
+st.subheader("🏠 Enter Property Details")
+
+col1, col2, col3 = st.columns(3)
 
 
-# ---------------------------------------------------------
-# INPUT FORM
-# ---------------------------------------------------------
+with col1:
 
-with st.form("house_form"):
-
-    st.markdown(
-        '<div class="section-title">🏠 Property Details</div>',
-        unsafe_allow_html=True
+    area = st.number_input(
+        "Area",
+        min_value=100.0,
+        max_value=100000.0,
+        value=1000.0,
+        step=50.0
     )
 
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-
-        carpet_area = st.number_input(
-            "📐 Carpet Area",
-            min_value=0.0,
-            value=1000.0,
-            step=10.0
-        )
-
-        bathroom = st.number_input(
-            "🚿 Bathroom",
-            min_value=0.0,
-            value=2.0,
-            step=1.0
-        )
-
-    with col2:
-
-        balcony = st.number_input(
-            "🌿 Balcony",
-            min_value=0.0,
-            value=1.0,
-            step=1.0
-        )
-
-        floor_number = st.number_input(
-            "🏢 Floor Number",
-            min_value=0.0,
-            value=1.0,
-            step=1.0
-        )
-
-    with col3:
-
-        total_floors = st.number_input(
-            "🏙️ Total Floors",
-            min_value=0.0,
-            value=5.0,
-            step=1.0
-        )
-
-        location = st.selectbox(
-            "📍 Location",
-            [
-                "ahmedabad",
-                "allahabad",
-                "aurangabad",
-                "badlapur",
-                "bangalore",
-                "bhiwadi",
-                "bhopal",
-                "bhubaneswar",
-                "chandigarh",
-                "chennai",
-                "coimbatore",
-                "dehradun",
-                "durgapur",
-                "ernakulam",
-                "faridabad",
-                "ghaziabad",
-                "goa",
-                "greater-noida",
-                "guntur",
-                "gurgaon",
-                "guwahati",
-                "gwalior",
-                "haridwar",
-                "hyderabad",
-                "indore",
-                "jabalpur",
-                "jaipur",
-                "jamshedpur",
-                "kalyan",
-                "kanpur",
-                "kochi",
-                "kolkata",
-                "lucknow",
-                "ludhiana",
-                "mangalore",
-                "mohali",
-                "mumbai",
-                "mysore",
-                "nagpur",
-                "nashik",
-                "navi-mumbai",
-                "new-delhi",
-                "noida",
-                "other",
-                "palghar",
-                "panchkula",
-                "patna",
-                "pune",
-                "raipur",
-                "ranchi",
-                "siliguri",
-                "sonipat",
-                "surat",
-                "thane",
-                "thrissur",
-                "trichy",
-                "trivandrum",
-                "udaipur",
-                "vadodara",
-                "vapi",
-                "varanasi",
-                "vijayawada",
-                "visakhapatnam",
-                "zirakpur"
-            ]
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    col4, col5, col6 = st.columns(3)
-
-    with col4:
-
-        furnishing = st.selectbox(
-            "🛋️ Furnishing",
-            [
-                "Unfurnished",
-                "Semi-Furnished"
-            ]
-        )
-
-    with col5:
-
-        transaction = st.selectbox(
-            "💳 Transaction",
-            [
-                "Other",
-                "Rent/Lease",
-                "Resale"
-            ]
-        )
-
-    with col6:
-
-        ownership = st.selectbox(
-            "📄 Ownership",
-            [
-                "Freehold",
-                "Leasehold",
-                "Power Of Attorney"
-            ]
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    col7, col8 = st.columns(2)
-
-    with col7:
-
-        facing = st.selectbox(
-            "🧭 Facing",
-            [
-                "North",
-                "North - East",
-                "North - West",
-                "South",
-                "South - East",
-                "South -West",
-                "West"
-            ]
-        )
-
-    with col8:
-
-        overlooking = st.selectbox(
-            "🌳 Overlooking",
-            [
-                "Pool",
-                "Main_Road",
-                "Garden_Park"
-            ]
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    predict = st.form_submit_button(
-        "✨ Predict House Price"
+    bhk = st.number_input(
+        "BHK",
+        min_value=1,
+        max_value=20,
+        value=2,
+        step=1
     )
 
 
-# ---------------------------------------------------------
+with col2:
+
+    carpet_area = st.number_input(
+        "Carpet Area",
+        min_value=0.0,
+        max_value=100000.0,
+        value=800.0,
+        step=50.0
+    )
+
+    bathroom = st.number_input(
+        "Bathroom",
+        min_value=1,
+        max_value=20,
+        value=2,
+        step=1
+    )
+
+
+with col3:
+
+    floor_number = st.number_input(
+        "Floor Number",
+        min_value=0,
+        max_value=100,
+        value=1,
+        step=1
+    )
+
+    balcony = st.number_input(
+        "Balcony",
+        min_value=0,
+        max_value=20,
+        value=1,
+        step=1
+    )
+
+
+# =========================================================
+# LOCATION
+# =========================================================
+
+st.subheader("📍 Location")
+
+location_features = [
+    feature
+    for feature in FEATURES
+    if feature.lower().startswith("location_")
+    or feature.lower().startswith("newlocation_")
+]
+
+locations = []
+
+for feature in location_features:
+
+    if "_" in feature:
+        locations.append(feature.split("_", 1)[1])
+
+
+if locations:
+
+    location = st.selectbox(
+        "Select Location",
+        sorted(locations)
+    )
+
+else:
+
+    location = st.text_input(
+        "Enter Location"
+    )
+
+
+# =========================================================
+# FURNISHING
+# =========================================================
+
+st.subheader("🛋️ Furnishing")
+
+furnishing_options = [
+    "Unfurnished",
+    "Semi-Furnished",
+    "Furnished"
+]
+
+furnishing = st.selectbox(
+    "Furnishing Type",
+    furnishing_options
+)
+
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+
+# =========================================================
 # PREDICTION
-# ---------------------------------------------------------
+# =========================================================
 
-if predict:
-
-    # Start with EVERY feature expected by the PKL
-    data = {
-        feature: 0
-        for feature in FEATURES
-    }
-
-    # Numeric features
-    data["Index"] = 0
-    data["Carpet Area"] = carpet_area
-    data["Bathroom"] = bathroom
-    data["Balcony"] = balcony
-    data["Floor_Number"] = floor_number
-    data["Total_Floors"] = total_floors
-
-    # -----------------------------------------------------
-    # LOCATION
-    # -----------------------------------------------------
-
-    location_column = f"newlocation_{location}"
-
-    if location_column in data:
-        data[location_column] = 1
-
-    # -----------------------------------------------------
-    # FURNISHING
-    # -----------------------------------------------------
-
-    furnishing_column = f"Furnishing_{furnishing}"
-
-    if furnishing_column in data:
-        data[furnishing_column] = 1
-
-    # -----------------------------------------------------
-    # TRANSACTION
-    # -----------------------------------------------------
-
-    transaction_map = {
-        "Other": "Transaction_Other",
-        "Rent/Lease": "Transaction_Rent/Lease",
-        "Resale": "Transaction_Resale"
-    }
-
-    transaction_column = transaction_map[transaction]
-
-    if transaction_column in data:
-        data[transaction_column] = 1
-
-    # -----------------------------------------------------
-    # OWNERSHIP
-    # -----------------------------------------------------
-
-    ownership_column = f"Ownership_{ownership}"
-
-    if ownership_column in data:
-        data[ownership_column] = 1
-
-    # -----------------------------------------------------
-    # FACING
-    # -----------------------------------------------------
-
-    facing_column = f"facing_{facing}"
-
-    if facing_column in data:
-        data[facing_column] = 1
-
-    # -----------------------------------------------------
-    # OVERLOOKING
-    # -----------------------------------------------------
-
-    overlooking_column = f"overlooking_{overlooking}"
-
-    if overlooking_column in data:
-        data[overlooking_column] = 1
-
-    # -----------------------------------------------------
-    # DATAFRAME
-    # -----------------------------------------------------
-
-    input_data = pd.DataFrame(
-        [data],
-        columns=FEATURES
-    )
+if st.button("🔮 Predict House Price"):
 
     try:
 
+        # Create empty dataframe with EXACT model columns
+        input_data = pd.DataFrame(
+            0,
+            index=[0],
+            columns=FEATURES
+        )
+
+        # -------------------------------------------------
+        # Numerical features
+        # -------------------------------------------------
+
+        numerical_values = {
+            "Area": area,
+            "BHK": bhk,
+            "Carpet Area": carpet_area,
+            "Bathroom": bathroom,
+            "Balcony": balcony,
+            "Floor_Number": floor_number
+        }
+
+        for column, value in numerical_values.items():
+
+            if column in input_data.columns:
+                input_data.loc[0, column] = value
+
+
+        # -------------------------------------------------
+        # Location
+        # -------------------------------------------------
+
+        possible_location_columns = [
+            f"location_{location}",
+            f"Location_{location}",
+            f"newlocation_{location}",
+            f"newlocation_{location.lower()}"
+        ]
+
+        for column in possible_location_columns:
+
+            if column in input_data.columns:
+
+                input_data.loc[0, column] = 1
+                break
+
+
+        # -------------------------------------------------
+        # Furnishing
+        # -------------------------------------------------
+
+        furnishing_columns = [
+            f"Furnishing_{furnishing}",
+            f"furnishing_{furnishing}",
+            f"Furnishing_{furnishing.replace('-', '-')}",
+            f"furnishing_{furnishing.replace('-', '-')}"
+        ]
+
+        for column in furnishing_columns:
+
+            if column in input_data.columns:
+
+                input_data.loc[0, column] = 1
+                break
+
+
+        # -------------------------------------------------
+        # Prediction
+        # -------------------------------------------------
+
         prediction = model.predict(input_data)[0]
+
+
+        # -------------------------------------------------
+        # RESULT
+        # -------------------------------------------------
 
         st.markdown(
             f"""
             <div class="result-box">
 
-            <h2>🏡 Estimated House Price</h2>
+                <div style="font-size:20px;">
+                    🏡 Estimated House Price
+                </div>
 
-            <h1>₹ {prediction:,.2f}</h1>
+                <div class="result-price">
+                    ₹ {prediction:,.2f}
+                </div>
 
-            <p>
-            Based on the property details you entered
-            </p>
+                <div style="margin-top:10px;">
+                    Based on the property details provided
+                </div>
 
             </div>
             """,
             unsafe_allow_html=True
         )
 
+
     except Exception as e:
 
-        st.error("❌ Prediction Error")
+        st.error("Prediction Error")
 
         st.code(str(e))
 
 
-# ---------------------------------------------------------
+# =========================================================
 # FOOTER
-# ---------------------------------------------------------
+# =========================================================
 
 st.markdown(
     """
-    <div class="footer">
-    🏡 DreamHome • Machine Learning House Price Predictor
+    <br>
+    <div style="
+        text-align:center;
+        color:#777;
+        font-size:14px;
+    ">
+        🏡 DreamHome House Price Predictor
     </div>
     """,
     unsafe_allow_html=True
