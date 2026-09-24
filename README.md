@@ -46,5 +46,5 @@ House-Price-Prediction/
 │
 ├── app.py
 ├── requirements.txt
-├── house_prices(2).pk1
+├── house_prices.pk1
 └── README.md
